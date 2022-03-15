@@ -4,39 +4,36 @@
 
 // Changes here require a server restart.
 // To restart press CTRL + C in terminal and run `gridsome develop`
-const axios = require("axios");
+const fetch = require("node-fetch");
 
 module.exports = function(api) {
   api.chainWebpack((config, { isServer }) => {
     if (isServer) {
       config.externals([
         nodeExternals({
-          whitelist: [/^vuetify/]
-        })
+          whitelist: [/^vuetify/],
+        }),
       ]);
     }
   });
 
-  api.loadSource(async actions => {
-    const data = await axios.get("http://127.0.0.1:1337/api/events");
-
+  api.loadSource(async (actions) => {
+    const response = await fetch("http://localhost:1337/api/events");
+    const jsonData = await response.json();
+    const data = jsonData.data;
     const collection = actions.addCollection({
       typeName: "Event",
-      path: "/events/:id"
+      path: "/events/:id",
     });
-
     for (const event of data) {
       collection.addNode({
         id: event.id,
         path: "/events/" + event.id,
-        title: event.title,
-        description: event.description,
-        price: event.price,
-        date: event.date,
-        duration: event.duration,
-        thumbnail: event.image.formats.thumbnail.url,
-        image: event.image.formats.medium.url,
-        category: event.categories[0].id
+        title: event.attributes.Name,
+        description: event.attributes.Description,
+        date: event.attributes.Date,
+        duration: event.attributes.Time,
+        category: event.attributes.Category,
       });
     }
   });

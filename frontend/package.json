@@ -9,6 +9,7 @@
   "dependencies": {
     "axios": "^0.26.1",
     "gridsome": "^0.7.0",
+    "node-fetch": "^2.6.7",
     "vuetify": "^2.6.4"
   },
   "devDependencies": {
