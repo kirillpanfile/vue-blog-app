@@ -1,70 +1,89 @@
 <template>
-  <Layout>
-    <v-container>
-      <v-row>
-        <v-col sm="6" offset-sm="4">
-          <v-tabs v-model="tab" grow>
-            <v-tab>Item One</v-tab>
-            <v-tab>Item Two</v-tab>
-            <v-tab>Item Three</v-tab>
-          </v-tabs>
+  <Layout v-slot="{ searchText }">
+    <v-tabs v-model="tab" grow>
+      <v-tab>All events</v-tab>
+      <v-tab>Coding</v-tab>
+      <v-tab>Games</v-tab>
+    </v-tabs>
+    <v-row class="justify-space-around">
+      <v-card
+        width="280"
+        class="mt-5"
+        v-for="edge in getEvents(searchText)"
+        :key="edge.node.id"
+      >
+        <v-card-title> {{ edge.node.title }}</v-card-title>
+        <v-card-subtitle class="pb-0">
+          {{ edge.node.date }}
+        </v-card-subtitle>
 
-          <v-card class="mx-auto" max-width="400">
-            <v-img
-              class="white--text align-end"
-              height="200px"
-              src="https://cdn.vuetifyjs.com/images/cards/docks.jpg"
-            />
-            <v-card-subtitle class="pb-0">
-              Number 10
-            </v-card-subtitle>
-
-            <v-card-text class="text--primary">
-              <div>Whitehaven Beach</div>
-
-              <div>Whitsunday Island, Whitsunday Islands</div>
-            </v-card-text>
-
-            <v-card-actions>
-              <v-btn color="orange" text>
-                Share
-              </v-btn>
-
-              <v-btn color="orange" text>
-                Explore
-              </v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-col>
-      </v-row>
-    </v-container>
+        <v-card-actions>
+          <v-btn
+            color="orange"
+            text
+            @click="$router.push(`/events/${edge.node.id}`)"
+          >
+            More info
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-row>
   </Layout>
 </template>
+
+<page-query>
+query {
+ events: allEvent {
+    edges{
+      node {
+				id
+      	title
+        description
+        duration
+        date
+        category
+      }
+    }
+	}
+}
+  </page-query>
 
 <script>
 export default {
   metaInfo: {
-    title: "Hello, world!"
+    title: "Hello, world!",
   },
   data() {
     return {
-      tab: 0
+      tab: 0,
+      events: [],
     };
   },
   watch: {
     tab(val) {
       if (this.tab == 0) this.showAllEvents();
-      else this.showEventsByType();
-    }
+      if (this.tab == 1) this.showEventsByType("Coding");
+      if (this.tab == 2) this.showEventsByType("Games");
+    },
+  },
+  mounted() {
+    this.events = this.$page.events.edges;
   },
   methods: {
     showAllEvents() {
-      console.log("all");
+      this.events = this.$page.events.edges;
     },
-    showEventsByType() {
-      console.log("custom");
-    }
-  }
+    showEventsByType(val) {
+      this.events = this.$page.events.edges.filter((edge) => {
+        return edge.node.category == val;
+      });
+    },
+    getEvents(searchText) {
+      return this.events.filter((edge) => {
+        return edge.node.title.toLowerCase().includes(searchText.toLowerCase());
+      });
+    },
+  },
 };
 </script>
 

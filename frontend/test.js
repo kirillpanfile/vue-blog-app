@@ -14,6 +14,5 @@ const fetch = require("node-fetch");
       duration: event.attributes.Time,
       category: event.attributes.Category,
     });
-    console.log(event.attributes);
   }
 })();
