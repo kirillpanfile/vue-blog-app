@@ -19,7 +19,7 @@
       />
 
       <v-spacer></v-spacer>
-      <v-btn>Create Event</v-btn>
+      <g-link to="/create/"> <v-btn>Create Event</v-btn></g-link>
     </v-app-bar>
     <v-main>
       <v-container>
